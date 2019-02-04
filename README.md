@@ -11,7 +11,7 @@ Then pass source and destination arguments respectively to binary file.
 ### macOS and Linux
 
 ```bash
-pending test
+./main /Users/garenyondem/desktop/preciousFile.txt /Users/BackupFolder
 ```
 ### Windows
 ```bash
