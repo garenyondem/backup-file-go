@@ -20,24 +20,20 @@ var targetFile = destinationDirectory + fileSeparator + fileName
 
 func main() {
 	defer os.Exit(0)
-	var err error
-
-	err = copy(sourceFilePath, targetFile)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("File copy successful!")
-
 	zipFilePath := destinationDirectory + fileSeparator + newFileName() + ".zip"
-	err = archive(zipFilePath, targetFile)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("Zipping complete")
 
-	err = remove(targetFile)
-	if err != nil {
-		panic(err)
+	var funcs []func() (error, string)
+	funcs = append(funcs, func() (error, string) { return copy(sourceFilePath, targetFile), "File copy successful" })
+	funcs = append(funcs, func() (error, string) { return archive(zipFilePath, targetFile), "Zipping complete" })
+	funcs = append(funcs, func() (error, string) { return remove(targetFile), "Removed leftovers" })
+
+	for i := 0; i < len(funcs); i++ {
+		err, successMsg := funcs[i]()
+		if err != nil {
+			panic(err)
+		} else {
+			fmt.Println(successMsg)
+		}
 	}
 	fmt.Println("All done!")
 }
